@@ -20,6 +20,7 @@ date: 2016-04-15 23:29:04
 [Python爬虫系列教程](http://cuiqingcai.com/1052.html) —— 简单易懂的Python爬虫教程
 [CheckIo](https://checkio.org/) —— 磨炼你的Python技艺的好地方
 [使用Python轻松抓取网页](http://wuchong.me/blog/2014/04/24/easy-web-scraping-with-python/)
+[Python正则表达式指南](http://www.cnblogs.com/huxi/archive/2010/07/04/1771073.html)
 
 # 云服务和网站搭建
 [Digital Ocean](https://cloud.digitalocean.com/) —— 云服务器提供商
@@ -27,6 +28,7 @@ date: 2016-04-15 23:29:04
 [CloudFlare](https://www.cloudflare.com) —— 免费CDN加速
 [使用OwnCloud搭建个人私有云](https://www.crazycen.com/linux/2152.html)
 [Nginx下配置网站ssl实现https访问](https://www.pastdust.com/nginx-ssl-https/)
+[VPS大全](http://www.vpsdaquan.cn/)
 
 # Hexo
 [Next主题](http://theme-next.iissnan.com/)
