@@ -22,8 +22,6 @@ type: "about"
 # **友情链接**
 [Shintaku](https://www.shintaku.cc/) [暮雨今夕](http://muyus.cc/)
 
-# **最近访客**
-<div class="ds-recent-visitors" data-num-items="28" data-avatar-size="42" id="ds-recent-visitors"></div><br><br>
 
 # **留言板**
 > 轻轻地来，请带走一些云彩
