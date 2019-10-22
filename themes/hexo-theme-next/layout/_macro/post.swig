@@ -59,7 +59,7 @@
 
           <span class="post-count">&nbsp; | &nbsp;字数 {{ wordcount(post.content) }}</span>
           <span class="post-count">&nbsp; | &nbsp;阅读预计 {{ min2read(post.content) }}分钟</span>
-          <!--&nbsp; | &nbsp;阅读次数<span id="busuanzi_value_page_pv"></span>-->
+          <!--<span class="busuanzi_container_page_pv">&nbsp; | &nbsp;阅读次数<span id="busuanzi_value_page_pv"></span></span>-->
 
           <!--
           {% if post.categories and post.categories.length %}

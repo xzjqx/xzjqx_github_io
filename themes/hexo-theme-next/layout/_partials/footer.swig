@@ -5,7 +5,7 @@
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <a href = "http://www.xzjqx.me">xzjqx's blog</a>
+  <a href = "http://www.xzjqx.date">xzjqx's blog</a>
 </div>
 
 <div class="powered-by">

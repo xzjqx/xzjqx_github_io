@@ -1,0 +1,826 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Qt5,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="xzjqx's blog" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/face1.gif?v=0.5.0">
+
+
+
+
+
+
+<meta name="description" content="这段时间一直在尝试使用Qt连接上MySQL数据库，真的是有点难啊！！！参考了很多网上的资料，最后才成功的连上了数据库，文末将会有我认为有用的链接。成功后发现其实也没有那么难嘛，只是自己真的是有点傻呢==">
+<meta name="keywords" content="Qt5">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软件实习笔记三（Qt5.5连接MySQL5.6）">
+<meta property="og:url" content="http://xzjqx.data/2015/10/02/software-practice-3/index.html">
+<meta property="og:site_name" content="xzjqx&#39;s blog">
+<meta property="og:description" content="这段时间一直在尝试使用Qt连接上MySQL数据库，真的是有点难啊！！！参考了很多网上的资料，最后才成功的连上了数据库，文末将会有我认为有用的链接。成功后发现其实也没有那么难嘛，只是自己真的是有点傻呢==">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://img.blog.csdn.net/20151003003748400">
+<meta property="og:image" content="http://img.blog.csdn.net/20151003005433524">
+<meta property="og:image" content="http://img.blog.csdn.net/20151003005757654">
+<meta property="og:image" content="http://img.blog.csdn.net/20151003011500167">
+<meta property="og:image" content="http://img.blog.csdn.net/20151003011923063">
+<meta property="og:image" content="http://img.blog.csdn.net/20151003012133782">
+<meta property="og:image" content="http://img.blog.csdn.net/20151003012346901">
+<meta property="og:image" content="http://img.blog.csdn.net/20151003012606960">
+<meta property="og:updated_time" content="2017-08-21T05:15:48.579Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="软件实习笔记三（Qt5.5连接MySQL5.6）">
+<meta name="twitter:description" content="这段时间一直在尝试使用Qt连接上MySQL数据库，真的是有点难啊！！！参考了很多网上的资料，最后才成功的连上了数据库，文末将会有我认为有用的链接。成功后发现其实也没有那么难嘛，只是自己真的是有点傻呢==">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20151003003748400">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 软件实习笔记三（Qt5.5连接MySQL5.6） | xzjqx's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?30d8ceca14541976d67a61960a178e2b";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xzjqx's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">个人博客</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="#" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                软件实习笔记三（Qt5.5连接MySQL5.6）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-10-02T02:03:42+08:00" content="2015-10-02">
+              2015-10-02
+            </time>
+          </span>
+
+          <span class="post-count">&nbsp; | &nbsp;字数 2,062</span>
+          <span class="post-count">&nbsp; | &nbsp;阅读预计 11分钟</span>
+          <!--<span class="busuanzi_container_page_pv">&nbsp; | &nbsp;阅读次数<span id="busuanzi_value_page_pv"></span></span>-->
+
+          <!--
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/学习笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">学习笔记</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+          -->
+
+          <!--
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/10/02/software-practice-3/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/02/software-practice-3/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+          -->
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这段时间一直在尝试使用Qt连接上MySQL数据库，真的是有点难啊！！！<br>参考了很多网上的资料，最后才成功的连上了数据库，文末将会有我认为有用的链接。<br>成功后发现其实也没有那么难嘛，只是自己真的是有点傻呢==</p>
+<a id="more"></a>
+<p>首先Qt5以后自带MySQL的驱动，不像现在网上那些Qt4的教程，需要我们自己重新编译加载MySQL的驱动，这样整个过程确实简单多了。。。<br>所以安装MySQL的过程就不赘述了。。。<br>接下来要介绍连接数据库的各种错误：</p>
+<h3 id="链接错误"><a href="#链接错误" class="headerlink" title="链接错误"></a>链接错误</h3><p>错误显示如下：<br><img src="http://img.blog.csdn.net/20151003003748400" alt=""></p>
+<p>解决方法：由于在qt中使用了数据库，但是在它的项目文件中却没有相应的说明，所以在工程的.pro文件加入一句代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">QT += sql</div></pre></td></tr></table></figure></p>
+<h3 id="提示能找到MySQL数据库，但是不能加载数据库"><a href="#提示能找到MySQL数据库，但是不能加载数据库" class="headerlink" title="提示能找到MySQL数据库，但是不能加载数据库"></a>提示能找到MySQL数据库，但是不能加载数据库</h3><p>错误显示如下：<br><img src="http://img.blog.csdn.net/20151003005433524" alt=""></p>
+<p>这个问题就比较复杂了，我们需要进行调试，调试过程如下：</p>
+<ul>
+<li>首先使用qDebug输出错误信息，在main函数中加入以下代码：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">qDebug() &lt;&lt; QSqlDatabase::drivers();  </div><div class="line">qDebug() &lt;&lt; QCoreApplication::libraryPaths();</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>应用程序输出显示如下错误信息：<br><img src="http://img.blog.csdn.net/20151003005757654" alt=""></p>
+<p>发现我们输出的可使用数据库的驱动中存在“<strong>QMYSQL</strong>”，但是在连接时不能找到，这是为什么呢？我们接着向下看，发现在库依赖中的<code>D:/Qt/Qt5.5.0/5.5/mingw492_32/plugins</code>目录下存在sqldrivers目录，说明驱动存在，那原因到底是什么呢，再看后面提示的<br><code>D:/build-QtTest-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug</code>目录，该目录是程序输入目录，库依赖指到这，说明其中缺少了什么库嘛，那我们现在的目标是去找出缺少的库，加入在这个文件夹中应该就能解决问题了。</p>
+<ul>
+<li>我们将主函数的代码改成下述代码，再查看程序输出查找原因：<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;qtsql/QSqlDatabase&gt;  </span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;qtsql/QSqlQuery&gt;  </span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;qtsql/QSqlError&gt;  </span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;QPluginLoader&gt;  </span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"mainwindow.h"</span>  </span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">loadMySqlDriver</span><span class="params">()</span></span>;  </div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span> </span>&#123;  </div><div class="line">    <span class="function">QCoreApplication <span class="title">app</span><span class="params">(argc, argv)</span></span>;  </div><div class="line">    loadMySqlDriver();  </div><div class="line">    <span class="keyword">return</span> app.exec();  </div><div class="line">&#125;  </div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">loadMySqlDriver</span><span class="params">()</span> </span>&#123;  </div><div class="line">    QPluginLoader loader;  </div><div class="line">    <span class="comment">// MySQL 驱动插件的路径  </span></div><div class="line">    loader.setFileName(<span class="string">"D:/Qt/Qt5.5.0/5.5/mingw492_32/plugins/sqldrivers/qsqlmysqld.dll"</span>);  </div><div class="line">    qDebug() &lt;&lt; loader.load();  </div><div class="line">    qDebug() &lt;&lt; loader.errorString();  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>显示错误如下：<br><img src="http://img.blog.csdn.net/20151003011500167" alt=""></p>
+<p>由此看来加载<strong>MySQL</strong>驱动出错不是找不到驱动插件<code>qsqlmysqld.dll</code>，而是找不到<code>qsqlmysqld.dll</code>依赖的<strong>DLL</strong>. 把<code>~/MySQL Server 5.6/lib</code>下的<br><code>libmysql.dll</code>和<code>libmysqld.dll</code>复制到<strong>exe</strong>文件所在目录(如下图)<br><img src="http://img.blog.csdn.net/20151003011923063" alt=""></p>
+<ul>
+<li><p>然后再运行程序，这时 MySQL 驱动插件就加载成功了，输出如下：<br><img src="http://img.blog.csdn.net/20151003012133782" alt=""></p>
+</li>
+<li><p>最后我们修改main函数查看能否连接数据库：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;qtsql/QSqlDatabase&gt;  </span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;qtsql/QSqlQuery&gt;  </span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;qtsql/QSqlError&gt;  </span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;QPluginLoader&gt;  </span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"conn.h"</span>  </span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span> </span>&#123;  </div><div class="line">    <span class="function">QCoreApplication <span class="title">app</span><span class="params">(argc, argv)</span></span>;  </div><div class="line">    QSqlDatabase db = QSqlDatabase::addDatabase(<span class="string">"QMYSQL"</span>);  </div><div class="line">    db.setHostName(<span class="string">"localhost"</span>);  </div><div class="line">    db.setDatabaseName(<span class="string">"qt"</span>);  </div><div class="line">    db.setUserName(<span class="string">"root"</span>);  </div><div class="line">    db.setPassword(<span class="string">""</span>);  </div><div class="line"></div><div class="line">    <span class="keyword">if</span>( !db.open() ) &#123;  </div><div class="line">        qDebug() &lt;&lt; <span class="string">"不能连上数据库"</span>;  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">else</span> &#123;  </div><div class="line">        qDebug() &lt;&lt; <span class="string">"成功连上数据库"</span>;  </div><div class="line">    &#125;  </div><div class="line"></div><div class="line">    <span class="keyword">return</span> app.exec();  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>若输出如下，则成功连接上了数据库：<br><img src="http://img.blog.csdn.net/20151003012346901" alt=""></p>
+</li>
+</ul>
+<p>至此，问题彻底解决啦(^_^)</p>
+<h4 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h4><p>此外，使用过程中还会碰上一些小问题，不要慌，都是可以解决的<br>比如以下情况：这是因为你的上一个程序没有完全关闭，所以不能打开下一个调试程序，只需在应用程序输出中把之前的程序全部关闭再重新运行就不会出现这个问题了。<br><img src="http://img.blog.csdn.net/20151003012606960" alt=""></p>
+<h4 id="最后附上参考网站："><a href="#最后附上参考网站：" class="headerlink" title="最后附上参考网站："></a>最后附上参考网站：</h4><p><a href="http://blog.csdn.net/lhfeng/article/details/1822784" target="_blank">http://blog.csdn.net/lhfeng/article/details/1822784</a><br><a href="http://blog.chinaunix.net/uid-29278628-id-4049544.html" target="_blank">http://blog.chinaunix.net/uid-29278628-id-4049544.html</a><br><a href="http://tieba.baidu.com/p/3542726621" target="_blank">http://tieba.baidu.com/p/3542726621</a><br><a href="http://qtdebug.com/DB-AccessMySQL.html" target="_blank">http://qtdebug.com/DB-AccessMySQL.html</a></p>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Qt5/" rel="tag">#Qt5</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/09/30/software-practice-2/" rel="next" title="软件实习笔记二（Qt简单对话框实例开发）">
+                <i class="fa fa-chevron-left"></i> 软件实习笔记二（Qt简单对话框实例开发）
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/11/16/hexo-build/" rel="prev" title="记录Hexo的搭建过程">
+                记录Hexo的搭建过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/10/02/software-practice-3/" data-title="软件实习笔记三（Qt5.5连接MySQL5.6）" data-url="http://xzjqx.data/2015/10/02/software-practice-3/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/default_avatar.jpg" alt="xzjqx">
+          <p class="site-author-name" itemprop="name">xzjqx</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+          <div class="site-state-item site-state-posts">
+            <span class="site-state-item-count">43.3k</span>
+            <span class="site-state-item-name">字数</span>
+          </div>
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xzjqx" target="_blank">
+                  
+                    <i class="fa fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+            <div class="links-of-blogroll-title">Links</div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://www.shintaku.cc/" target="_blank">Shintaku</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://gggjiji.github.io/" target="_blank">GGGjiji</a>
+                </li>
+              
+            </ul>
+          
+          <!--
+          </br>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            您是xzjqx的第<span id="busuanzi_value_site_uv"></span>个小伙伴
+          </span>
+          -->
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#链接错误"><span class="nav-number">1.</span> <span class="nav-text">链接错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#提示能找到MySQL数据库，但是不能加载数据库"><span class="nav-number">2.</span> <span class="nav-text">提示能找到MySQL数据库，但是不能加载数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#注意事项："><span class="nav-number">2.1.</span> <span class="nav-text">注意事项：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#最后附上参考网站："><span class="nav-number">2.2.</span> <span class="nav-text">最后附上参考网站：</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <a href="http://www.xzjqx.date">xzjqx's blog</a>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io" rel="external nofollow">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow">
+    NexT.Mist
+  </a>
+</div>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+<script type="text/javascript" src="/vendors/jquery-scrollintoview/jquery.scrollintoview.min.js?v=0.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=0.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"xzjqx"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';                
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = true;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '' && data_content != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title < 0 && index_content < 0 ){
+                                isMatch = false;
+                            } else {
+                                if (index_content < 0) {
+                                    index_content = 0;
+                                }
+                                if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            }
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+                            
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').mousedown(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

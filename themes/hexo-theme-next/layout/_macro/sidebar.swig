@@ -109,8 +109,8 @@
           {% endif %}
           <!--
           </br>
-          <span id="busuanzi_container_site_pv" style='display:none'>
-            您是xzjqx的第<span id="busuanzi_value_site_pv"></span>个小伙伴
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            您是xzjqx的第<span id="busuanzi_value_site_uv"></span>个小伙伴
           </span>
           -->
         </div>

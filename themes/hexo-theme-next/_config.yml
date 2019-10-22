@@ -27,8 +27,9 @@ rss:
 menu:
   home: /
   archives: /archives
+  categories: /categories
   tags: /tags
-  about: /about
+  # about: /about
   #ganhuo: /ganhuo
   #commonweal: /404.html
 
@@ -75,8 +76,8 @@ scheme: Mist
 # Value is the target link (E.g. GitHub: https://github.com/iissnan)
 social:
   GitHub: https://github.com/xzjqx
-  Weibo: http://weibo.com/xzjqx
-  #LinkLabel: Link
+  # Weibo: http://weibo.com/xzjqx
+  # LinkLabel: Link
 
 
 # Social Links Icons
@@ -89,8 +90,8 @@ social_icons:
   # Icon Mappings.
   # KeyMapsToSocalItemKey: NameOfTheIconFromFontAwesome
   GitHub: github
-  #Twitter: twitter
-  Weibo: weibo
+  # Twitter: twitter
+  # Weibo: weibo
 
 
 # Sidebar Avatar
@@ -102,8 +103,8 @@ social_icons:
 links_title: Links
 links:
   Shintaku: https://www.shintaku.cc/
-  暮雨今夕: http://muyus.cc/
-  Zhenlee: http://www.zhenlee.cn/
+  # 暮雨今夕: http://muyus.cc/
+  # Zhenlee: http://www.zhenlee.cn/
   GGGjiji: https://gggjiji.github.io/
 
 # Table Of Ccontents in the Sidebar
