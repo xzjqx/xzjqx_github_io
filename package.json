@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "hexo": "^3.2.0",
-    "hexo-clean-css": "0.0.2",
+    "hexo-clean-css": "2.0.0",
     "hexo-deployer-git": "^0.1.0",
     "hexo-deployer-heroku": "^0.1.0",
     "hexo-deployer-openshift": "^0.1.0",
@@ -21,10 +21,10 @@
     "hexo-generator-seo-friendly-sitemap": "0.0.15",
     "hexo-generator-sitemap": "^1.1.2",
     "hexo-generator-tag": "^0.2.0",
-    "hexo-html-minifier": "0.0.1",
+    "hexo-html-minifier": "1.0.0",
     "hexo-renderer-ejs": "^0.2.0",
     "hexo-renderer-marked": "^0.2.10",
-    "hexo-renderer-stylus": "^0.2.3",
+    "hexo-renderer-stylus": "^2.1.0",
     "hexo-server": "^0.2.0",
     "hexo-wordcount": "^1.1.0"
   }
